@@ -14,18 +14,23 @@ NC='\033[0m' # No Color
 
 # VAR
 md_file="$1"
-diname="md2atlassian:v1.0"
+image_and_tag="md2atlassian:v1.0"
+dirname="$(dirname "$0")"
 
 # FUNCTIONS
 function docker_ckeck () {
-    if ! [ -x "$(command -v docker)" ]; then
-        echo 'Error: docker is not installed.' >&2
+    if [ -x "$(command -v podman)" ]; then
+        cmd="podman"
+    elif [ -x "$(command -v docker)" ]; then
+        cmd="docker"
+    else
+        echo 'Error: neither podman nor docker is installed.' >&2
         exit 1
     fi
-    docker image inspect ${diname} > /dev/null 2>&1 || {
-        echo -e "${YELLOW}Docker image ${diname} not found. Building it now...${NC}"
+    ${cmd} image inspect ${image_and_tag} > /dev/null 2>&1 || {
+        echo -e "${YELLOW}Docker image ${image_and_tag} not found. Building it now...${NC}"
         cd "$(dirname "$0")" || exit 1
-        docker build -t ${diname} .
+        ${cmd} build -t ${image_and_tag} .
         if [ $? -ne 0 ]; then
             echo 'Error: Failed to build the Docker image.' >&2
             exit 1
@@ -33,7 +38,7 @@ function docker_ckeck () {
     }
 }
 function run_container () {
-    docker run --rm -v "$(pwd)":/data ${diname} "$md_file"
+    docker run --rm -v "$dirname":/data ${image_and_tag} "$md_file"
 }
 
 # MAIN
