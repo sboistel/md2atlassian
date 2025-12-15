@@ -15,6 +15,6 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g markdown2confluence
 
 # Set the working directory
-WORKDIR /app
+WORKDIR /data
 
 ENTRYPOINT ["markdown2confluence"]
