@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     gnupg \
     npm \
+    vim \
  && rm -rf /var/lib/apt/lists/*
 
 # Install markdown-to-confluence
